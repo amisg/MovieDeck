@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Movie Deck</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<!-- nav bar -->
+		<header>
+			<nav>
+				<a href="./index.html">
+					<h1>Movie Deck</h1>
+				</a>
+			</nav>
+		</header>
+
+		<!-- search bar -->
+		<section id="search-bar" class="search-bar">
+			<input
+				type="text"
+				name="search"
+				id="search-input"
+				placeholder="search by name" />
+			<button id="search-button">Search</button>
+		</section>
+
+		<!-- sorting options -->
+		<div id="sorting-options" class="sorting-options">
+			<button id="sort-by-date" class="sort-button sort-button-active">
+				Sort by Date
+			</button>
+			<button id="sort-by-rating" class="sort-button">Sort by rating</button>
+		</div>
+
+		<!-- tabs cotainer-->
+		<div class="tabs">
+			<button id="all-tab" class="active-tab tab">All</button>
+			<button id="favourites-tab" class="tab">Favourites</button>
+		</div>
+
+		<!-- movie-list and pagination container -->
+		<article class="movie-list-pagination-btns">
+			<!-- movie-list display-->
+			<div id="movie-list" class="movie-list"></div>
+
+			<!-- pagination-->
+			<div id="pagination" class="pagination">
+				<button id="prev-button" class="pagination-btn">Prev</button>
+				<button id="page-number-button" class="pagination-btn">
+					CurrentPage: 1
+				</button>
+				<button id="next-button" class="pagination-btn">Next</button>
+			</div>
+		</article>
+
+		<footer>
+			<p>(c) Movie Deck - 2024</p>
+		</footer>
+
+		<script src="./script.js"></script>
+	</body>
+</html>
