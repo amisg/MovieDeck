@@ -68,7 +68,7 @@ header > nav > a {
 .tab {
 	width: 150px;
 	height: 32px;
-	border: none;
+	/* border: none; */
 	border-radius: 8px;
 	cursor: pointer;
 }
@@ -117,4 +117,10 @@ footer {
 	border: 1px solid black;
 	border-radius: 8px;
 	padding: 10px;
+}
+
+.votes-favourites {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
 }

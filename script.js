@@ -1,5 +1,5 @@
 let currentPage = 1;
-
+let MOVIE_LIST = [];
 // selectors
 
 const movieListContainer = document.getElementById("movie-list");
@@ -47,7 +47,8 @@ async function fetchData(pageNumber, sortingOption) {
 	const data = await response.json();
 	const results = data["results"];
 	const modifiedList = remapData(results);
-	console.log(modifiedList);
+	MOVIE_LIST = modifiedList;
+	// console.log(modifiedList);
 	return modifiedList;
 }
 
@@ -55,8 +56,33 @@ async function fetchData(pageNumber, sortingOption) {
 
 function renderMovies(movieList = []) {
 	movieList.forEach((movie) => {
+		const { id } = movie;
 		const movieCardHtml = createCardForMovie(movie);
 		movieListContainer.append(movieCardHtml);
+
+		// const favElement = document.getElementById(`favourites${id}`);
+		const heartElement = document.getElementById(`icon${id}`);
+		heartElement.addEventListener("click", (event) => {
+			const movieIdLike = event.target.id;
+			const isFavMovie = heartElement.classList.contains("fa-heart");
+			if (isFavMovie) {
+				removeMovieFromLocalStorage(movieIdLike);
+				heartElement.classList.add("fa-heart-o");
+				heartElement.classList.remove("fa-heart");
+			} else {
+				setMoviesToLocalStorage(id);
+				heartElement.classList.remove("fa-heart-o");
+				heartElement.classList.add("fa-heart");
+			}
+		});
+
+		// determine if each movie is fav or not
+		const favMovies = getMoviesFromLocalStorage();
+		const isFavMovie = favMovies.includes(id);
+		if (isFavMovie) {
+			heartElement.classList.remove("fa-heart-o");
+			heartElement.classList.add("fa-heart");
+		}
 	});
 }
 
@@ -77,8 +103,8 @@ function createCardForMovie(movie) {
 			<p class="vote-count">Votes: ${voteAverage}</p>
 			<p class="popularity-count">Popularity: ${popularity}
 		</section>
-		<section class="favourites">
-			heart
+		<section style="cursor:pointer" id="favourites${id}" class="favourites">
+		<i id=icon${id} class="fa fa-heart-o" aria-hidden="true"></i>
 		</section>
 	</secton>
 	`;
@@ -93,6 +119,7 @@ async function facilitator(sortOption = false) {
 	const data = await fetchData(currentPage, sortOption);
 	clearMovies();
 	renderMovies(data);
+	allTabButtonElement.classList.add("active-tab");
 }
 
 facilitator();
@@ -103,7 +130,7 @@ facilitator();
 prevButtonElement.addEventListener("click", () => {
 	currentPage--;
 	facilitator();
-	pageNumberButtonElement.innerHTML = `currentPage: ${currentPage}`;
+	pageNumberButtonElement.innerHTML = `CurrentPage: ${currentPage}`;
 	// if (currentPage === 1) {
 	// 	prevButtonElement.disabled = true;
 	// } else {
@@ -114,7 +141,7 @@ prevButtonElement.addEventListener("click", () => {
 nextButtonElement.addEventListener("click", () => {
 	currentPage++;
 	facilitator();
-	pageNumberButtonElement.innerHTML = `currentPage: ${currentPage}`;
+	pageNumberButtonElement.innerHTML = `CurrentPage: ${currentPage}`;
 	// if (currentPage === 1) {
 	// 	nextButtonElement.disabled = false;
 	// } else {
@@ -123,5 +150,73 @@ nextButtonElement.addEventListener("click", () => {
 });
 
 sortByRateButtonElement.addEventListener("click", () => {
-	facilitator(true);
+	sortByRateButtonElement.classList.toggle("sort-button-active");
+
+	if (sortByRateButtonElement.classList.contains("sort-button-active")) {
+		facilitator(true);
+	} else {
+		facilitator(false);
+	}
 });
+
+// tabs
+
+function displayMoviesForSwitchedTabs(element) {
+	const id = element.id;
+	// console.log(id, "elem");
+	if (id === "all-tab") {
+		sortByDateButtonElement.style.display = "block";
+		sortByRateButtonElement.style.display = "block";
+		facilitator();
+	} else if (id === "favourites-tab") {
+		clearMovies();
+		const favMovieListIds = getMoviesFromLocalStorage();
+		const FavMovieList = MOVIE_LIST.filter((movie) => {
+			const { id } = movie;
+			return favMovieListIds.includes(id);
+		});
+		renderMovies(FavMovieList);
+		sortByDateButtonElement.style.display = "none";
+		sortByRateButtonElement.style.display = "none";
+	}
+}
+
+function switchTabs(event) {
+	allTabButtonElement.classList.remove("active-tab");
+	favouritesTabButtonElement.classList.remove("active-tab");
+	const element = event.target;
+	element.classList.add("active-tab");
+	displayMoviesForSwitchedTabs(element);
+}
+
+allTabButtonElement.addEventListener("click", switchTabs);
+favouritesTabButtonElement.addEventListener("click", switchTabs);
+
+function setMoviesToLocalStorage(newFavMovie) {
+	const prevFavMovies = getMoviesFromLocalStorage();
+	const arrayOfFavMovies = [...prevFavMovies, newFavMovie];
+	localStorage.setItem("favMovie", JSON.stringify(arrayOfFavMovies));
+}
+
+function getMoviesFromLocalStorage() {
+	const allFavMovieObj = JSON.parse(localStorage.getItem("favMovie"));
+	if (!allFavMovieObj) {
+		return [];
+	} else {
+		return allFavMovieObj;
+	}
+}
+
+function removeMovieFromLocalStorage(id) {
+	const allFavMovieObj = getMoviesFromLocalStorage();
+	const filteredMovies = allFavMovieObj.filter(
+		(ids) => Number(ids) !== Number(String(id).substring(4))
+	);
+	localStorage.setItem("favMovie", JSON.stringify(filteredMovies));
+}
+
+const favIconElement = document.getElementById("favourites");
+
+// favIconElement.addEventListener("click", (event) => {
+// 	setMoviesToLocalStorage();
+// });
