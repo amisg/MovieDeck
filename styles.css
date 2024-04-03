@@ -97,3 +97,24 @@ footer {
 	background-color: grey;
 	color: white;
 }
+
+/* card layout */
+
+.poster {
+	width: 200px;
+	height: 300px;
+	object-fit: cover;
+	overflow: hidden;
+}
+
+.movie-list {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	gap: 12px;
+}
+
+.card {
+	border: 1px solid black;
+	border-radius: 8px;
+	padding: 10px;
+}
